@@ -1,21 +1,29 @@
 import git
-repo = git.Repo("/")
+from flashtext import KeywordProcessor
+
+keyword_processor = KeywordProcessor()
+
+repo = git.Repo("../wifi_activity_logger")
+keyword_processor.add_keyword('.connect')
 
 commits_list = list(repo.iter_commits())
 
 print('Commits: {}'.format(len(commits_list)))
 for i in range(len(commits_list)):
-	print(i)
-	if not i <= 0:
-		a_commit = commits_list[i]
-		b_commit = commits_list[i+1]
+	a_commit = commits_list[i]
+	b_commit = commits_list[i+1]
 
-		diff = a_commit.diff(b_commit, create_patch=True)
+	diff = a_commit.diff(b_commit, create_patch=True)
 
-		for diff in diff.iter_change_type('M'):
-			try:
-				print(diff.a_blob.data_stream.read().decode('utf-8'))
-			except IOError:
-				print("Err")
-			except UnicodeDecodeError:
-				print("Err")
+	all_commits = ""
+
+	for diff in diff.iter_change_type('M'):
+		try:
+			commit_diff = diff.a_blob.data_stream.read().decode('utf-8')
+			all_commits += commit_diff
+		except IOError:
+			print("Err")
+		except UnicodeDecodeError:
+			print("Err")
+	#print(all_commits)
+	print(keyword_processor.extract_keywords(all_commits))
