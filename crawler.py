@@ -4,7 +4,7 @@ from flashtext import KeywordProcessor
 
 keyword_processor = KeywordProcessor()
 
-repo = git.Repo("../wifi_activity_logger")
+repo = git.Repo(".")
 
 keywords = []
 
